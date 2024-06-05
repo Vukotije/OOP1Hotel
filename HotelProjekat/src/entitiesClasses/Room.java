@@ -2,7 +2,7 @@ package entitiesClasses;
 
 import java.util.EnumMap;
 
-import entitiesEnums.RoomFacilities;
+import entitiesEnums.RoomFacility;
 import entitiesEnums.RoomStatus;
 import entitiesEnums.RoomType;
 
@@ -11,35 +11,35 @@ public class Room extends BaseEntity {
     private int roomNumber;
     private RoomType roomType;
     private RoomStatus roomStatus;
-    private EnumMap<RoomFacilities, Boolean> roomFacilitiesAvailablity;
+    private EnumMap<RoomFacility, Boolean> roomFacilitiesAvailablity;
 
-    private static EnumMap<RoomType, Integer> roomTypeCounts = new EnumMap<>(RoomType.class);
-
+//	==============================================================================================
+//										CONSTRUCTORS
+//	==============================================================================================
+	
 	public Room(int roomNumber, RoomType roomType, RoomStatus roomStatus,
-			EnumMap<RoomFacilities, Boolean> roomFacilitiesAvailablity) {
+			EnumMap<RoomFacility, Boolean> roomFacilitiesAvailablity) {
 	    super();
+    	setRoomType(roomType);
 	    setRoomNumber(roomNumber);
-    	this.roomType = roomType;
 	    setRoomStatus(roomStatus);
-	    this.roomFacilitiesAvailablity = new EnumMap<>(RoomFacilities.class);
-	    for (RoomFacilities facility : RoomFacilities.values()) {
-	    	this.roomFacilitiesAvailablity.put(facility, false);
-	     }
-	    this.roomFacilitiesAvailablity.putAll(roomFacilitiesAvailablity);
-	    
-        roomTypeCounts.put(roomType, roomTypeCounts.getOrDefault(roomType, 0) + 1);
+	    setRoomFacilitiesAvailablity(roomFacilitiesAvailablity);
 	}
 	
-	public static int getRoomCountByType(RoomType roomType) {
-        return roomTypeCounts.getOrDefault(roomType, 0);
-    }
-
-    @Override
-	public String toString() {
-		return "Room [roomNumber=" + roomNumber + ", roomType=" + roomType + ", roomStatus=" + roomStatus
-				+ ", roomFacilities=" + roomFacilitiesAvailablity + "]";
+	public Room(String id, int roomNumber, RoomType roomType, RoomStatus roomStatus,
+			EnumMap<RoomFacility, Boolean> roomFacilitiesAvailablity) {
+	    super();
+    	setRoomType(roomType);
+	    setRoomNumber(roomNumber);
+	    setRoomStatus(roomStatus);
+	    setRoomFacilitiesAvailablity(roomFacilitiesAvailablity);
+	    setId(id);
 	}
 
+//	==============================================================================================
+//										GETTERS & SETTERS
+//	==============================================================================================
+	
 	public int getRoomNumber() {
         return roomNumber;
     }
@@ -53,11 +53,6 @@ public class Room extends BaseEntity {
     }
 
     public void setRoomType(RoomType roomType) {
-    	RoomType oldRoomType = getRoomType();
-    	if (!oldRoomType.equals(roomType)) { 
-			roomTypeCounts.put(oldRoomType, getRoomCountByType(oldRoomType) - 1);
-			roomTypeCounts.put(roomType, getRoomCountByType(roomType) + 1);
-    	}
     	this.roomType = roomType;
     }
 
@@ -69,15 +64,22 @@ public class Room extends BaseEntity {
         this.roomStatus = roomStatus;
     }
 
-    public void setRoomFacilityAvailablity(RoomFacilities roomFacilities, boolean value) {
-        this.roomFacilitiesAvailablity.put(roomFacilities, value);
-    }
-
-    public boolean getRoomFacilityAvailablity(RoomFacilities roomFacilities) {
-        return this.roomFacilitiesAvailablity.get(roomFacilities);
-    }
-
-    public EnumMap<RoomFacilities, Boolean> getRoomFacilitiesAvailablity() {
+    public EnumMap<RoomFacility, Boolean> getRoomFacilitiesAvailablity() {
         return this.roomFacilitiesAvailablity;
     }
+    
+	public void setRoomFacilitiesAvailablity(EnumMap<RoomFacility, Boolean> roomFacilitiesAvailablity) {
+		this.roomFacilitiesAvailablity = roomFacilitiesAvailablity;
+	}
+//	==============================================================================================
+//										TO STRING
+//	==============================================================================================
+	
+    @Override
+	public String toString() {
+		return "Room [roomNumber=" + roomNumber + ", roomType=" + roomType + ", roomStatus=" + roomStatus
+				+ ", roomFacilities=" + roomFacilitiesAvailablity + "]";
+	}
+    
+
 }

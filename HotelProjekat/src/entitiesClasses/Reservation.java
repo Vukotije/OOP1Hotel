@@ -2,43 +2,79 @@ package entitiesClasses;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.EnumMap;
 
 import entitiesEnums.ReservationStatus;
+import entitiesEnums.RoomFacility;
 import entitiesEnums.RoomType;
-import storage.PricelistData;
+import managerClasses.PricelistManager;
 
 public class Reservation extends BaseEntity{
 	
-	@Override
-	public String toString() {
-		return "Reservation [status=" + status + ", guest=" + guest + ", startDate=" + startDate + ", endDate="
-				+ endDate + ", roomType=" + roomType + ", additionalServiceWanted=" + additionalServiceWanted
-				+ ", price=" + price + "]";
-	}
-
-
-	private ReservationStatus status;
 	private Guest guest;
 	private LocalDate startDate;
 	private LocalDate endDate;
+	private LocalDate creationDate;
+	private ReservationStatus status;
 	private RoomType roomType;
-	private ArrayList<AdditionalService> additionalServiceWanted;
+	private Room room;
 	private double price;
-	
+	private EnumMap<RoomFacility, Boolean> roomFacilitiesWanted;
+	private ArrayList<AdditionalService> additionalServiceWanted;
 
-	public Reservation(Guest guest, LocalDate startDate, LocalDate endDate, RoomType roomType,
-			ArrayList<AdditionalService> additionalServiceWanted, PricelistData pricelistMap) {
+//	==============================================================================================
+//										CONSTRUCTORS
+//	==============================================================================================
+	
+	public Reservation(ReservationStatus reservationStatus, Guest guest, LocalDate startDate,
+			LocalDate endDate, RoomType roomType,
+			EnumMap<RoomFacility, Boolean> roomFacilitiesWanted,
+			ArrayList<AdditionalService> additionalServiceWanted) {
 	
 	  super();
-	  this.status = ReservationStatus.PENDING;
+	  setStatus(reservationStatus);
 	  setGuest(guest);
 	  setStartDate(startDate);
 	  setEndDate(endDate);
 	  setRoomType(roomType);	
-	  setAdditionalServiceWanted(additionalServiceWanted);
-	  generatePrice(pricelistMap);
+	  setRoomFacilitiesWanted(roomFacilitiesWanted);
+	  setAdditionalServicesWanted(additionalServiceWanted);
+	  generatePrice();
+	  creationDate = LocalDate.now();
+	  this.room = null;
+	}
+	
+	public Reservation(String id, LocalDate creationDate, Room room, double price, ReservationStatus reservationStatus, Guest guest, LocalDate startDate, LocalDate endDate, RoomType roomType,
+			EnumMap<RoomFacility, Boolean> roomFacilitiesWanted,
+			ArrayList<AdditionalService> additionalServiceWanted) {
+	
+	  super();
+	  setStatus(reservationStatus);
+	  setGuest(guest);
+	  setStartDate(startDate);
+	  setEndDate(endDate);
+	  setRoomType(roomType);	
+	  setRoomFacilitiesWanted(roomFacilitiesWanted);
+	  setAdditionalServicesWanted(additionalServiceWanted);
+	  setPrice(price);
+	  setCreationDate(creationDate);
+	  setRoom(room);
+	  setId(id);
+	  
 	}
 
+//	==============================================================================================
+//										GETTERS & SETTERS
+//	==============================================================================================
+	
+	
+	public LocalDate getCreationDate() {
+		return creationDate;
+	}
+	
+	public void setCreationDate(LocalDate creationDate) {
+		this.creationDate = creationDate;
+	}
 
 	public Guest getGuest() {
 		return guest;
@@ -88,33 +124,96 @@ public class Reservation extends BaseEntity{
 		this.price = price;
 	}
 	
-
-	public ArrayList<AdditionalService> getAdditionalServiceWanted() {
+	public ArrayList<AdditionalService> getAdditionalServicesWanted() {
 		return additionalServiceWanted;
 	}
 
-
-	public void setAdditionalServiceWanted(ArrayList<AdditionalService> additionalServiceWanted) {
+	public void setAdditionalServicesWanted(ArrayList<AdditionalService> additionalServiceWanted) {
 		this.additionalServiceWanted = additionalServiceWanted;
 	}
-		
-	public void generatePrice(PricelistData pricelistData) {
+	
+	public EnumMap<RoomFacility, Boolean> getRoomFacilitiesWanted() {
+		return roomFacilitiesWanted;
+	}
+	
+	public void setRoomFacilitiesWanted(EnumMap<RoomFacility, Boolean> roomFacilitiesWanted) {
+		this.roomFacilitiesWanted = roomFacilitiesWanted;
+	}
+	public Room getRoom() {
+		return room;
+	}
+
+	public void setRoom(Room room) {
+		this.room = room;
+	}
+
+//	==============================================================================================
+//										TO STRING
+//	==============================================================================================
+	
+	@Override
+	public String toString() {
+		return "Reservation [status=" + status + ", guest=" + guest + ", startDate=" + startDate 
+				+ ", endDate=" + endDate + ", roomType=" + roomType + ", additionalServiceWanted="
+				+ additionalServiceWanted + ", price=" + price + "]";
+	}
+
+//	==============================================================================================
+//										OTHER METHODS
+//	==============================================================================================
+	
+	public void addAdditionalServiceWanted(AdditionalService additionalService) {
+		this.additionalServiceWanted.add(additionalService);
+	}
+	
+	public void removeAdditionalServiceWanted(AdditionalService additionalService) {
+		this.additionalServiceWanted.remove(additionalService);
+	}	
+
+	public void generatePrice() {
+		PricelistManager pricelistData = PricelistManager.getInstance();		
 		double price = 0;
-		try {
+		if (!pricelistData.getPricelistData().isEmpty()) {
 			for (LocalDate movingDate = getStartDate(); !movingDate.isAfter(getEndDate()); movingDate = movingDate.plusDays(1)) {
-				for (String id : pricelistData.getPricelistMap().keySet()) {
-                    if (pricelistData.getPricelist(id).getStartDate().isBefore(movingDate)
-                    && pricelistData.getPricelist(id).getEndDate().isAfter(movingDate)) {
-                        price += pricelistData.getPricelist(id).getRoomTypePrice(getRoomType());
-                        for (AdditionalService service : getAdditionalServiceWanted()) {
-                            price += pricelistData.getPricelist(id).getAdditionalServicePrice(service);
+				for (String id : pricelistData.getPricelistData().keySet()) {
+					Pricelist pricelist = pricelistData.getPricelist(id);
+                    if (pricelist.getStartDate().isBefore(movingDate)
+                    && pricelist.getEndDate().isAfter(movingDate)) {
+                        price += pricelist.getRoomTypePrice(roomType);
+                        for (AdditionalService service : getAdditionalServicesWanted()) {
+                            price += pricelist.getAdditionalServicePrice(service);
                         }
                     }
 				}	
 		    }
-		} catch (Exception e) {
-			System.out.println("Hotel nije spreman za rezervacije, ne postoji cenovnik!");
+		} else {
+			System.err.println("Hotel nije spreman za check in, ne postoji cenovnik!");
+			System.exit(1);			
 		}
 		this.price = price;
+	}
+	
+	public void addToPrice(ArrayList<AdditionalService> additionalServices) {
+		PricelistManager pricelistData = PricelistManager.getInstance();
+		double aditionalPrice = 0;
+		if (!pricelistData.getPricelistData().isEmpty()) {
+			for (LocalDate movingDate = getStartDate(); !movingDate.isAfter(getEndDate()); movingDate = movingDate.plusDays(1)) {
+				for (String id : pricelistData.getPricelistData().keySet()) {
+					Pricelist pricelist = pricelistData.getPricelist(id);
+                    if (pricelist.getStartDate().isBefore(movingDate)
+                    && pricelist.getEndDate().isAfter(movingDate)) {
+                    	if (additionalServices != null) {
+                    		for (AdditionalService service : additionalServices) {
+                        		aditionalPrice += pricelist.getAdditionalServicePrice(service);
+                        	} 
+                        }
+                    }
+				}	
+		    }
+		} else {
+			System.err.println("Hotel nije spreman za check in, ne postoji cenovnik!");
+			System.exit(1);			
+		}
+		this.price += aditionalPrice;
 	}
 }

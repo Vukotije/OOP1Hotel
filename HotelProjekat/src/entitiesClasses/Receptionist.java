@@ -9,17 +9,52 @@ import entitiesEnums.UserRoles;
 public class Receptionist extends Employee {	
 
 	public static final UserRoles ROLE = UserRoles.RECEPTIONIST;
+	public static final double baseSalary = 75000.00;
+	private double salary;
+
+
+//	==============================================================================================
+//										COSTRUCTORS
+//	==============================================================================================
 	
-	public Receptionist(String name, String surname, Gender gender, LocalDate birthdate, String phone, String address,
-		String username, String password, EducationLevel educationLevel, double experience, double salary) {
+	
+	public Receptionist(String name, String surname, Gender gender, LocalDate birthdate,
+			String phone, String address, String username, String password,
+			EducationLevel educationLevel, double experience) {
 		
-		super(name, surname, gender, birthdate, phone, address, username, password, educationLevel, experience, salary);
+		super(name, surname, gender, birthdate, phone, address, username, password, educationLevel, experience);
+		this.salary = generateSalary(baseSalary, experience, educationLevel);
+	}
+
+	public Receptionist(String id, double salary, String name, String surname, Gender gender,
+			LocalDate birthdate, String phone, String address, String username, String password,
+			EducationLevel educationLevel, double experience) {
+		
+		super(name, surname, gender, birthdate, phone, address, username, password,
+				educationLevel, experience);
+		setSalary(salary);
+		setId(id);
+	}
+
+//	==============================================================================================
+//										GETTERS & SETTERS
+//	==============================================================================================
+	
+	public static UserRoles getRole() {
+		return ROLE;
 	}
 
 	@Override
-	public String toString() {
-		return "Receptionist [" + super.toString() + "]";
+	public double getSalary() {
+		return salary;
 	}
-
 	
+//	==============================================================================================
+//										TO STRING
+//	==============================================================================================
+	
+	@Override
+	public String toString() {
+		return "Receptionist [" + super.toString() + "salary=" + salary + "]";
+	}
 }

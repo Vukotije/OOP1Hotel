@@ -6,7 +6,6 @@ import entitiesEnums.Gender;
 
 public abstract class User extends BaseEntity{
 	
-	
 	private String name;
 	private String surname;
 	private Gender gender;
@@ -15,6 +14,10 @@ public abstract class User extends BaseEntity{
 	private String address;
 	private String username;
 	private String password;
+
+//	==============================================================================================
+//										CONSTRUCTORS
+//	==============================================================================================
 	
 	public User(String name, String surname, Gender gender, LocalDate birthdate,
 			String phone, String address, String username, String password){
@@ -28,14 +31,10 @@ public abstract class User extends BaseEntity{
         setUsername(username);
         setPassword(password);
     }
-		
 
-	@Override
-	public String toString() {
-		return "name=" + name + ", surname=" + surname + ", gender=" + gender + ", birthdate=" + birthdate
-				+ ", phone=" + phone + ", address=" + address + ", username=" + username + ", password=" + password;
-	}
-
+//	==============================================================================================
+//										GETTERS & SETTERS
+//	==============================================================================================
 
 	public String getName() {
 		return name;
@@ -101,4 +100,14 @@ public abstract class User extends BaseEntity{
 		this.password = password;
 	}
 	
+//	==============================================================================================
+//										TO STRING
+//	==============================================================================================
+	
+	@Override
+	public String toString() {
+		return "name=" + name + ", surname=" + surname + ", gender=" + gender + ", birthdate=" + birthdate
+				+ ", phone=" + phone + ", address=" + address + ", username=" + username + ", password=" + password;
+	}
+
 }

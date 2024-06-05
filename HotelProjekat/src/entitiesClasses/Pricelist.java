@@ -13,21 +13,36 @@ public class Pricelist extends BaseEntity{
 	private EnumMap<RoomType, Double> roomTypePrices;
 	private HashMap<AdditionalService, Double> additionalServicePrices;
 	
+//	==============================================================================================
+//										CONSTRUCTORS
+//	==============================================================================================
+	
+
 	public Pricelist(LocalDate startDate, LocalDate endDate, 
 			EnumMap<RoomType, Double> roomTypePrices,
 			HashMap<AdditionalService, Double> additionalServicePrices) {
 	    super();
 	    setStartDate(startDate);
 	    setEndDate(endDate);
-	    this.roomTypePrices = roomTypePrices;
-	    this.additionalServicePrices = additionalServicePrices;
+	    setRoomTypePrices(roomTypePrices);
+	    setAdditionalServicePrices(additionalServicePrices);
 	}
-
-	@Override
-	public String toString() {
-		return "Pricelist [startDate=" + startDate + ", endDate=" + endDate + ", roomTypePrices=" +
-				roomTypePrices + ", additionalServicePrices=" + additionalServicePrices + "]";
+	
+	public Pricelist(String id, LocalDate startDate, LocalDate endDate, 
+			EnumMap<RoomType, Double> roomTypePrices,
+			HashMap<AdditionalService, Double> additionalServicePrices) {
+	    super();
+	    setStartDate(startDate);
+	    setEndDate(endDate);
+	    setRoomTypePrices(roomTypePrices);
+	    setAdditionalServicePrices(additionalServicePrices);
+	    setId(id);
 	}
+	
+//	==============================================================================================
+//										GETTERS & SETTERS
+//	==============================================================================================
+	
 
 	public LocalDate getStartDate() {
 		return startDate;
@@ -57,6 +72,10 @@ public class Pricelist extends BaseEntity{
 		return roomTypePrices;
 	}
 	
+	public void setRoomTypePrices(EnumMap<RoomType, Double> roomTypePrices) {
+		this.roomTypePrices = roomTypePrices;
+	}
+	
 	public double getAdditionalServicePrice(AdditionalService service) {
         return additionalServicePrices.get(service);
     }
@@ -68,4 +87,20 @@ public class Pricelist extends BaseEntity{
     public HashMap<AdditionalService, Double> getAdditionalServicePrices() {
         return additionalServicePrices;
     }
+    
+	public void setAdditionalServicePrices(HashMap<AdditionalService, Double> additionalServicePrices) {
+		this.additionalServicePrices = additionalServicePrices;
+	}
+		
+//	==============================================================================================
+//										TO STRING
+//	==============================================================================================
+	
+	@Override
+	public String toString() {
+		return "Pricelist [startDate=" + startDate + ", endDate=" + endDate + ", roomTypePrices=" +
+				roomTypePrices + ", additionalServicePrices=" + additionalServicePrices + "]";
+	}
+
+
 }
