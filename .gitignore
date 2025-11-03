@@ -64,9 +64,8 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
-# Maven Wrapper (allow wrapper files)
-!.mvn/wrapper/maven-wrapper.properties
-!.mvn/wrapper/maven-wrapper.jar
+# Maven build directory
+target/
 
 # User-specific files
 *.suo
